@@ -1,3 +1,7 @@
+# copy từ app5
+# CÓ THỂ SỬ DỤNG
+# Tạo trafic fake nâng cấp hơn
+# app9 ổn hơn tất cả còn lại
 import streamlit as st
 from streamlit_folium import st_folium
 import folium
@@ -6,8 +10,16 @@ import numpy as np
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 from geopy.geocoders import Nominatim
-from datetime import datetime
+from datetime import datetime , timedelta, timezone
 import math
+
+# --- PHẦN TÍNH TOÁN THỜI GIAN (ĐẶT Ở ĐÂY) ---
+now_vn = datetime.now(timezone.utc) + timedelta(hours=7)
+current_time = now_vn.strftime("%H:%M")
+
+# --- PHẦN HIỂN THỊ GIAO DIỆN ---
+# Ở đoạn code tạo Header, bạn hãy thay giá trị giờ cũ bằng biến current_tim
+
 # ============================================================
 # 1. CẤU HÌNH TRANG
 # ============================================================
@@ -139,6 +151,7 @@ st.markdown("""
     text-shadow: 0px 0px 5px rgba(0,0,0,0.5); /* Thêm chút bóng cho nổi bật */
 }
 
+/* ĐOẠN ĐÃ SỬA */
 .stTextInput input, .stTextArea textarea {
     background: #ffffff !important; /* Đổi nền sang trắng để hiện chữ đen */
     border: 1px solid rgba(0, 0, 0, 0.1) !important;
@@ -150,6 +163,7 @@ st.markdown("""
     transition: all 0.25s ease;
 }
 
+/* Đảm bảo khi focus vào ô cũng giữ màu đen */
 .stTextInput input:focus, .stTextArea textarea:focus {
     border-color: var(--gold) !important;
     box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.15) !important;
@@ -330,7 +344,7 @@ VEHICLES = {
 if 'vehicle' not in st.session_state:
     st.session_state.vehicle = "Motorbike"
 def get_automated_demand():
-    now = datetime.now()
+    now = now_vn 
     hour = now.hour
     minute = now.minute
     time_float = hour + minute / 60.0
@@ -419,14 +433,16 @@ def get_address(lat, lon):
 
 def get_smart_traffic(dist_km, start_coords, end_coords):
     import random
-    from datetime import datetime
     import math
 
-    now = datetime.now()
-    hour = now.hour
-    weekday = now.weekday()  # 0=Mon
+    hour = now_vn.hour 
+    weekday = now_vn.weekday()
 
-    # 1. BASE THEO GIỜ 
+    # =========================
+    # 1. BASE THEO GIỜ
+    # =========================
+    # =========================
+    # 1. BASE THEO GIỜ (Cập nhật mới)
     # =========================
     if 7 <= hour <= 9:
         base = 7.5
@@ -454,7 +470,7 @@ def get_smart_traffic(dist_km, start_coords, end_coords):
 
     
     # =========================
-    # 3. THEO KHOẢNG CÁCH 
+    # 3. THEO KHOẢNG CÁCH (Chỉnh lại: Khoảng cách xa không nên làm tăng mật độ)
     # =========================
     # Mật độ giao thông thường phụ thuộc vào địa điểm hơn là tổng quãng đường.
     # Nên giảm bớt trọng số này.
@@ -514,6 +530,9 @@ try:
         dist = res["paths"][0]["distance"] / 1000 # Đổi sang km
 except:
     dist = 0 # Nếu lỗi thì mặc định là 0
+
+# 2. Sau đó mới tới phần hiển thị Hero Header (nơi bạn dùng biến dist để tính tiền)
+# ... (Giữ nguyên phần Markdown/HTML của bạn ở đây) ...
 # ============================================================
 # 6. HERO HEADER
 # ============================================================
@@ -576,6 +595,9 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# ============================================================
+# 7. LAYOUT CHÍNH
+# ============================================================
 # ============================================================
 # 7. LAYOUT CHÍNH
 # ============================================================
